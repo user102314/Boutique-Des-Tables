@@ -15,13 +15,20 @@ import {
 } from '@/components/ui/select'
 
 export const Route = createFileRoute('/products/')({
+  validateSearch: (search: Record<string, unknown>) => ({
+    category:
+      typeof search.category === 'string' && search.category !== ''
+        ? search.category
+        : undefined,
+  }),
   component: ProductsPage,
 })
 
 type SortOption = 'price-asc' | 'price-desc' | 'name' | 'stock'
 
 function ProductsPage() {
-  const [categoryId, setCategoryId] = useState<string>('all')
+  const { category: categoryFromUrl } = Route.useSearch()
+  const [categoryId, setCategoryId] = useState<string>(categoryFromUrl ?? 'all')
   const [search, setSearch] = useState('')
   const [sort, setSort] = useState<SortOption>('name')
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000])
@@ -29,6 +36,10 @@ function ProductsPage() {
 
   const { data: products = [], isLoading: loadingProducts } = useProducts()
   const { data: categories = [] } = useCategories()
+
+  useEffect(() => {
+    setCategoryId(categoryFromUrl ?? 'all')
+  }, [categoryFromUrl])
 
   const categoryMap = useMemo(
     () => Object.fromEntries(categories.map((c) => [c.id, c.nom])),
@@ -182,8 +193,8 @@ function ProductsPage() {
         </div>
 
         {loadingProducts ? (
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <div key={i} className="aspect-[4/5] animate-pulse rounded-3xl bg-muted" />
             ))}
           </div>
@@ -196,7 +207,7 @@ function ProductsPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {filtered.map((p, i) => (
               <ProductCard
                 key={p.id}

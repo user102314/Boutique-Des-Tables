@@ -1,8 +1,11 @@
 export const queryKeys = {
   products: ['products'] as const,
   categories: ['categories'] as const,
+  categoryShowcase: ['categories', 'showcase'] as const,
   news: ['news'] as const,
   newsPublished: ['news', 'published'] as const,
+  testimonialsActive: ['testimonials', 'active'] as const,
+  siteSettings: ['site', 'settings'] as const,
   product: (id: number) => ['products', id] as const,
   productComments: (id: number) => ['products', id, 'comments'] as const,
   productReviews: (id: number) => ['products', id, 'reviews'] as const,

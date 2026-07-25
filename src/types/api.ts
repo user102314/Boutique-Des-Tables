@@ -30,6 +30,13 @@ export interface Category {
   description?: string
 }
 
+export interface CategoryShowcase {
+  categoryId: number
+  nom: string
+  description?: string
+  product: Product
+}
+
 export interface ProductComment {
   id: number
   userId: number
@@ -98,6 +105,26 @@ export interface News {
   publishedAt?: string
 }
 
+export type TestimonialPlateforme =
+  | 'WHATSAPP'
+  | 'MESSENGER'
+  | 'INSTAGRAM'
+  | 'FACEBOOK'
+  | 'AUTRE'
+
+export interface Testimonial {
+  id: number
+  clientNom: string
+  message?: string
+  plateforme: TestimonialPlateforme
+  imageUrl?: string
+  avatarUrl?: string
+  reponseBoutique?: string
+  actif: boolean
+  ordre: number
+  createdAt?: string
+}
+
 export interface CartItem {
   productId: number
   nom: string
@@ -133,6 +160,13 @@ export interface LoyaltyProgramPublic {
 }
 
 export interface SiteSettings {
+  boutiqueNom?: string
+  slogan?: string
+  emailContact?: string
+  telephoneContact?: string
+  adresse?: string
+  ville?: string
+  pays?: string
   termsVersion: number
   termsContent: string
   whatsappNumber: string

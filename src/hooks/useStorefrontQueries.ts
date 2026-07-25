@@ -30,11 +30,38 @@ export function useCategories() {
   })
 }
 
+export function useCategoryShowcase() {
+  return useQuery({
+    queryKey: queryKeys.categoryShowcase,
+    queryFn: api.getCategoryShowcase,
+    refetchInterval: REFETCH_INTERVAL,
+    placeholderData: keepPreviousData,
+  })
+}
+
 export function usePublishedNews() {
   return useQuery({
     queryKey: queryKeys.newsPublished,
     queryFn: api.getPublishedNews,
     refetchInterval: REFETCH_INTERVAL,
+    placeholderData: keepPreviousData,
+  })
+}
+
+export function useActiveTestimonials() {
+  return useQuery({
+    queryKey: queryKeys.testimonialsActive,
+    queryFn: api.getActiveTestimonials,
+    refetchInterval: REFETCH_INTERVAL,
+    placeholderData: keepPreviousData,
+  })
+}
+
+export function useSiteSettings() {
+  return useQuery({
+    queryKey: queryKeys.siteSettings,
+    queryFn: api.getSiteSettings,
+    staleTime: 5 * 60_000,
     placeholderData: keepPreviousData,
   })
 }
