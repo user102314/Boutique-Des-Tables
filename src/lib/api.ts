@@ -13,7 +13,9 @@ import type {
   Visitor,
 } from '@/types/api'
 
-const BASE = import.meta.env.VITE_API_URL ?? '/api'
+import { getApiBase } from '@/lib/apiBase'
+
+const BASE = getApiBase()
 
 export function getVisitorKey(): string {
   const KEY = 'luxart_visitor_key'
@@ -213,9 +215,6 @@ export const api = {
 
   getPublishedNews: () => request<News[]>('/news/published'),
 
-  getActiveTestimonials: () =>
-    request<import('@/types/api').Testimonial[]>('/testimonials/active'),
-
   registerClient: (data: {
     nom: string
     email: string
@@ -242,6 +241,9 @@ export const api = {
 
   getSiteSettings: () => request<import('@/types/api').SiteSettings>('/site/settings'),
 
+  getActiveTestimonials: () =>
+    request<import('@/types/api').Testimonial[]>('/testimonials/active'),
+
   trackProductView: (productId: number, sessionId: string, userId?: number) =>
     trackBeacon(`/products/${productId}/track/view`, { sessionId, userId: userId ?? null }),
 
@@ -257,11 +259,4 @@ export const api = {
       userId: userId ?? null,
     }),
 }
-
-interface Category {
-  id: number
-  nom: string
-  description?: string
-}
-
 export type { CartItem }

@@ -1,0 +1,11 @@
+{
+  "framework": "tanstack-start",
+  "env": {
+    "VITE_API_URL": "https://api.luxury-art.tn/api"
+  },
+  "build": {
+    "env": {
+      "VITE_API_URL": "https://api.luxury-art.tn/api"
+    }
+  }
+}

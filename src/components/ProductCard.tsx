@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import type { Product } from '@/types/api'
-import { getProductImage } from '@/lib/images'
+import { getProductImage, getSimulationImage, hasSimulationImage } from '@/lib/images'
 import { formatPrice } from '@/lib/pricing'
 import { useFavorites } from '@/context/FavoritesContext'
 import { api, getTrackingSessionId } from '@/lib/api'
@@ -20,6 +20,8 @@ export function ProductCard({ product, categoryName, index = 0, onAr, compact = 
   const { client } = useAuth()
   const liked = isFavorite(product.id)
   const image = getProductImage(product)
+  const simulationImage = getSimulationImage(product)
+  const canSimulate = hasSimulationImage(product)
   const outOfStock = product.statut === 'RUPTURE_STOCK' || product.stock <= 0
 
   const handleProductClick = () => {
@@ -58,15 +60,16 @@ export function ProductCard({ product, categoryName, index = 0, onAr, compact = 
           <div className="aspect-[4/5] w-full">
             <img
               src={image}
-              alt={product.nom}
+              alt={product.ref}
               loading="lazy"
+              decoding="async"
               className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
             />
           </div>
 
           {outOfStock && (
             <span
-              className={`absolute left-3 top-3 rounded-full bg-brand-red font-bold uppercase tracking-wider text-white ${
+              className={`absolute left-3 top-3 rounded-full bg-brand-red font-bold uppercase tracking-wider text-sand ${
                 compact ? 'px-2 py-0.5 text-[10px]' : 'left-4 top-4 px-3 py-1 text-xs'
               }`}
             >
@@ -75,7 +78,7 @@ export function ProductCard({ product, categoryName, index = 0, onAr, compact = 
           )}
           {!outOfStock && product.stock <= 5 && (
             <span
-              className={`absolute rounded-full bg-accent-green font-bold uppercase tracking-wider text-white ${
+              className={`absolute rounded-full bg-accent-green font-bold uppercase tracking-wider text-sand ${
                 compact ? 'left-3 top-3 px-2 py-0.5 text-[10px]' : 'left-4 top-4 px-3 py-1 text-xs'
               }`}
             >
@@ -91,7 +94,7 @@ export function ProductCard({ product, categoryName, index = 0, onAr, compact = 
               compact ? 'right-2.5 top-2.5 h-8 w-8' : 'right-4 top-4 h-10 w-10'
             } ${
               liked
-                ? 'scale-110 bg-brand-red text-white'
+                ? 'scale-110 bg-brand-red text-sand'
                 : 'bg-background/80 text-foreground hover:bg-background'
             }`}
           >
@@ -107,15 +110,15 @@ export function ProductCard({ product, categoryName, index = 0, onAr, compact = 
             </svg>
           </button>
 
-          {onAr && (
+          {onAr && canSimulate && simulationImage && (
             <button
               type="button"
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                onAr(image)
+                onAr(simulationImage)
               }}
-              className={`absolute flex items-center justify-center rounded-full bg-accent-green text-white transition hover:opacity-90 ${
+              className={`absolute flex items-center justify-center rounded-full bg-accent-green text-sand transition hover:opacity-90 ${
                 compact ? 'bottom-2.5 right-2.5 h-8 w-8' : 'bottom-4 right-4 h-10 w-10'
               }`}
               aria-label="Tester en AR"
@@ -144,24 +147,29 @@ export function ProductCard({ product, categoryName, index = 0, onAr, compact = 
           <div className="min-w-0">
             <h3
               className={`font-display font-semibold text-foreground transition-colors group-hover:text-brand-red ${
-                compact ? 'truncate text-base' : 'text-xl'
+                compact ? 'truncate text-sm' : 'text-lg'
               }`}
             >
-              {product.nom}
+              {product.ref}
             </h3>
             {categoryName && (
               <p
                 className={`mt-0.5 uppercase tracking-wider text-muted-foreground ${
-                  compact ? 'text-xs' : 'text-sm'
+                  compact ? 'text-[10px]' : 'text-xs'
                 }`}
               >
                 {categoryName}
               </p>
             )}
+            {!compact && product.description?.trim() && (
+              <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                {product.description.trim()}
+              </p>
+            )}
           </div>
           <p
             className={`shrink-0 whitespace-nowrap font-display font-semibold text-accent-green ${
-              compact ? 'text-base' : 'text-xl'
+              compact ? 'text-sm' : 'text-lg'
             }`}
           >
             {formatPrice(Number(product.prix))}

@@ -14,7 +14,7 @@ export interface ProductImage {
 
 export interface Product {
   id: number
-  nom: string
+  ref: string
   description?: string
   prix: number
   stock: number
@@ -105,29 +105,9 @@ export interface News {
   publishedAt?: string
 }
 
-export type TestimonialPlateforme =
-  | 'WHATSAPP'
-  | 'MESSENGER'
-  | 'INSTAGRAM'
-  | 'FACEBOOK'
-  | 'AUTRE'
-
-export interface Testimonial {
-  id: number
-  clientNom: string
-  message?: string
-  plateforme: TestimonialPlateforme
-  imageUrl?: string
-  avatarUrl?: string
-  reponseBoutique?: string
-  actif: boolean
-  ordre: number
-  createdAt?: string
-}
-
 export interface CartItem {
   productId: number
-  nom: string
+  ref: string
   imageUrl: string
   prixUnitaire: number
   quantite: number
@@ -159,7 +139,30 @@ export interface LoyaltyProgramPublic {
   valeurRecompense: number
 }
 
+export type TestimonialPlateforme =
+  | 'WHATSAPP'
+  | 'MESSENGER'
+  | 'INSTAGRAM'
+  | 'FACEBOOK'
+  | 'AUTRE'
+
+export interface Testimonial {
+  id: number
+  clientNom: string
+  message?: string
+  plateforme: TestimonialPlateforme
+  imageUrl?: string
+  avatarUrl?: string
+  reponseBoutique?: string
+  actif: boolean
+  ordre: number
+  createdAt?: string
+}
+
 export interface SiteSettings {
+  termsVersion?: number
+  termsContent?: string
+  whatsappNumber?: string
   boutiqueNom?: string
   slogan?: string
   emailContact?: string
@@ -167,8 +170,5 @@ export interface SiteSettings {
   adresse?: string
   ville?: string
   pays?: string
-  termsVersion: number
-  termsContent: string
-  whatsappNumber: string
-  supportFaq: { question: string; answer: string }[]
+  supportFaq?: { question: string; answer: string }[]
 }

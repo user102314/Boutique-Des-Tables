@@ -1,26 +1,86 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { lazy, Suspense } from "react";
 import { AnimatedHero } from "@/components/AnimatedHero";
 import { SiteNav } from "@/components/SiteNav";
-import { ProductShowcase } from "@/components/ProductShowcase";
-import { LatestDecor } from "@/components/LatestDecor";
-import { NewsSection } from "@/components/NewsSection";
-import { TestimonialsSection } from "@/components/TestimonialsSection";
-import { SiteFooter } from "@/components/SiteFooter";
+import { Reveal } from "@/components/Reveal";
+import { api } from "@/lib/api";
+import {
+  PAGE_COPY,
+  buildSeoHead,
+  organizationSchema,
+  websiteSchema,
+} from "@/lib/seo";
+
+const ProductShowcase = lazy(() =>
+  import("@/components/ProductShowcase").then((m) => ({ default: m.ProductShowcase }))
+);
+const TestimonialsSection = lazy(() =>
+  import("@/components/TestimonialsSection").then((m) => ({ default: m.TestimonialsSection }))
+);
+const NewsSection = lazy(() =>
+  import("@/components/NewsSection").then((m) => ({ default: m.NewsSection }))
+);
+const LatestDecor = lazy(() =>
+  import("@/components/LatestDecor").then((m) => ({ default: m.LatestDecor }))
+);
+const SiteFooter = lazy(() =>
+  import("@/components/SiteFooter").then((m) => ({ default: m.SiteFooter }))
+);
 
 export const Route = createFileRoute("/")({
+  loader: async () => {
+    const [products, categories, news, testimonials] = await Promise.all([
+      api.getProducts().catch(() => []),
+      api.getCategories().catch(() => []),
+      api.getPublishedNews().catch(() => []),
+      api.getActiveTestimonials().catch(() => []),
+    ]);
+    return { products, categories, news, testimonials };
+  },
+  head: () =>
+    buildSeoHead({
+      title: PAGE_COPY.home.title,
+      description: PAGE_COPY.home.description,
+      path: "/",
+      jsonLd: [organizationSchema(), websiteSchema()],
+    }),
   component: Index,
 });
 
+function SectionSkeleton() {
+  return <div className="h-64 w-full animate-pulse bg-muted/40" />;
+}
+
 function Index() {
+  const { products, categories, news, testimonials } = Route.useLoaderData();
+
   return (
-    <main className="min-h-screen bg-background font-[Inter,sans-serif]">
+    <main className="flex min-h-screen flex-col bg-background font-[Inter,sans-serif]">
       <SiteNav />
       <AnimatedHero />
-      <ProductShowcase />
-      <TestimonialsSection />
-      <NewsSection />
-      <LatestDecor />
-      <SiteFooter />
+      <Suspense fallback={<SectionSkeleton />}>
+        <Reveal>
+          <ProductShowcase initialProducts={products} initialCategories={categories} />
+        </Reveal>
+      </Suspense>
+      <Suspense fallback={<SectionSkeleton />}>
+        <Reveal>
+          <TestimonialsSection initialTestimonials={testimonials} />
+        </Reveal>
+      </Suspense>
+      <Suspense fallback={<SectionSkeleton />}>
+        <Reveal>
+          <NewsSection initialNews={news} />
+        </Reveal>
+      </Suspense>
+      <Suspense fallback={<SectionSkeleton />}>
+        <Reveal>
+          <LatestDecor />
+        </Reveal>
+      </Suspense>
+      <Suspense fallback={null}>
+        <SiteFooter />
+      </Suspense>
     </main>
   );
 }

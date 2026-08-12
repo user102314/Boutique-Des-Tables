@@ -1,8 +1,28 @@
+import { getApiBase, getApiOrigin } from '@/lib/apiBase'
+
+export { getApiBase, getApiOrigin } from '@/lib/apiBase'
+
+/**
+ * Résout une URL média backend (`/uploads/...`) vers l'origine API HTTPS.
+ * Les blob:/data:/http(s): restent inchangées.
+ */
 export function resolveImageSrc(url?: string | null): string {
   if (!url) return '/placeholder-art.svg'
-  if (url.startsWith('http://') || url.startsWith('https://')) return url
-  if (url.startsWith('/uploads')) return url
-  return url.startsWith('/') ? url : `/${url}`
+  if (
+    url.startsWith('http://') ||
+    url.startsWith('https://') ||
+    url.startsWith('blob:') ||
+    url.startsWith('data:')
+  ) {
+    return url
+  }
+  const path = url.startsWith('/') ? url : `/${url}`
+  const origin = getApiOrigin()
+  if (origin && (path.startsWith('/uploads') || path.startsWith('/api'))) {
+    return `${origin}${path}`
+  }
+  // Dev local avec proxy Vite : garder le chemin relatif (/uploads → proxy)
+  return path
 }
 
 export function getProductImages(product: {
@@ -24,4 +44,20 @@ export function getProductImage(product: {
   images?: { url: string; ordre?: number }[]
 }): string {
   return getProductImages(product)[0]
+}
+
+/** Image 2 (ordre=1) — détourée pour la simulation AR sur le mur */
+export function hasSimulationImage(product: {
+  imageUrl?: string
+  images?: { url: string; ordre?: number }[]
+}): boolean {
+  return getProductImages(product).length > 1
+}
+
+export function getSimulationImage(product: {
+  imageUrl?: string
+  images?: { url: string; ordre?: number }[]
+}): string | null {
+  const images = getProductImages(product)
+  return images.length > 1 ? images[1] : null
 }

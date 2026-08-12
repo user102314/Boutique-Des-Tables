@@ -6,8 +6,16 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { useAuth } from '@/context/AuthContext'
 import { api } from '@/lib/api'
 import { useSiteSettings } from '@/hooks/useStorefrontQueries'
+import { buildSeoHead, SITE } from '@/lib/seo'
 
 export const Route = createFileRoute('/signup')({
+  head: () =>
+    buildSeoHead({
+      title: `Créer un compte | ${SITE.name}`,
+      description: 'Inscription client Luxury Art_Tab.',
+      path: '/signup',
+      robots: 'noindex, nofollow',
+    }),
   component: SignUpPage,
 })
 
@@ -33,7 +41,7 @@ function SignUpPage() {
       setProgramHint(
         p.typeRecompense === 'FREE_TABLEAU'
           ? `Offre actuelle : ${p.commandesRequises} commandes livrées = tableau gratuit !`
-          : `Offre actuelle : ${p.commandesRequises} commandes livrées = ${p.valeurRecompense} DH offerts !`,
+          : `Offre actuelle : ${p.commandesRequises} commandes livrées = ${p.valeurRecompense} TND offerts !`,
       )
     }).catch(() => {})
   }, [])
@@ -57,7 +65,7 @@ function SignUpPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="flex min-h-screen flex-col bg-beige/25">
       <SiteNav />
       <div className="mx-auto max-w-lg px-6 py-16">
         <h1 className="font-display text-3xl font-bold text-foreground">Créer un compte</h1>
